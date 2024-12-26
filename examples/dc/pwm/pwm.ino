@@ -3,7 +3,6 @@
 #define IN1 PA8
 #define IN2 PA9
 #define SLEEPn PB3
-#define USR_BTN PC13
 #define VREF PA4
 
 /*Пример вращения dc мотором
@@ -18,7 +17,6 @@ void setup() {
   pinMode(PB3, OUTPUT);
   pinMode(IN1, OUTPUT);
   pinMode(IN2, OUTPUT);
-  pinMode(USR_BTN, INPUT_PULLUP);
   pinMode(VREF, OUTPUT);
  
   digitalWrite(SLEEPn, HIGH);
