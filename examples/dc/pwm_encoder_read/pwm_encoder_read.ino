@@ -15,7 +15,7 @@ int count = 0;
 int prev_count = 0;
 int rotations = 0;
 int rotations_enc = 0;
-
+int ipr = 1240;
 void ISR_A(){
 
   if (digitalRead(Enc_A) == digitalRead(Enc_B)){
@@ -25,11 +25,11 @@ void ISR_A(){
     count -= 1;
   }
 
-  if (count < -1240){ // 1240 импульсов на оборот
+  if (count < -ipr){ // 1240 импульсов на оборот
     rotations -= 1;
     count = 0;
   }
-  else if (count > 1240){
+  else if (count > ipr){
     rotations += 1;
     count = 0;
   }

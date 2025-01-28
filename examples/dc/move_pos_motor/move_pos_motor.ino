@@ -9,7 +9,8 @@
 
 int count = 0;
 int rotations = 0;
-float pos, current_pos;
+float pos;
+float current_pos = 0;
 
 int ipr = 1240;
 HardwareTimer *timer_move = new HardwareTimer(TIM3);
@@ -79,9 +80,9 @@ void setup() {
 
 
   Serial.begin(115200);
-  get_angle_radian();
+  //get_angle_radian();
   pos = current_pos;
-  Serial.println(pos);
+  Serial.println(current_pos);
 
   delay(1000);
 
@@ -90,8 +91,10 @@ void setup() {
 void loop() {
   
   if (Serial.available() > 0) {
-    pos = Serial.readString().toFloat();
+    pos =Serial.readString().toFloat();
+    Serial.println(pos);
   }
+
   if (current_pos == pos) {
     digitalWrite (IN1, 0);
     digitalWrite (IN2, 0);
