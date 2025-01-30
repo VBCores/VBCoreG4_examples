@@ -3,7 +3,7 @@ import struct
 import time
 
 
-can0 = can.interface.Bus(channel = 'can0', bustype = 'socketcan', fd=True)
+can0 = can.interface.Bus(channel = 'can0', interface = 'socketcan', fd=True)
 msg = 2.5
 while(1):
      t = time.time()
