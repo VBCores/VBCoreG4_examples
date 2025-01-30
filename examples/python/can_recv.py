@@ -10,4 +10,4 @@ while(1):
      if msg.arbitration_id == 101:
           data = struct.unpack('f', msg.data)
           print(data)
-     time.sleep(0.002 - (time.time()-t)) # время работы тела цикла - 2 мс
+     time.sleep(0.001) 

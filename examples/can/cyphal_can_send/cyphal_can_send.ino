@@ -25,7 +25,6 @@ static std::shared_ptr<CyphalInterface> cyphal_interface;
 
 typedef uint32_t millis_t;
 typedef uint64_t micros_t;
-void setup_comms();
 void heartbeat();
 void comms_loop(millis_t);
 
