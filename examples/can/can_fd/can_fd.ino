@@ -9,9 +9,9 @@
 //прочитать сообщение can по его ID -  candump can0,ID:7ff
 
 //в libraries добавить библиотеку VBCoreG4_arduino_system
-//функция can_init() запускает can
+//функция init() запускает can
 //функция get_hfdcan() возвращает переменную типа FDCAN_HandleTypeDef, без которой невозможно взаимодействие с can
-//функция create_header(uint8_t ID) создает хидер для отправки сообщения, в нее нужно передать переменную типа uint8_t - ID сообщения
+
 
 
 uint8_t data[4] = { 222, 173, 190, 239}; //DE AD BE EF
@@ -55,7 +55,7 @@ void loop() {
   while(HAL_FDCAN_GetRxFifoFillLevel(hfdcan1, FDCAN_RX_FIFO0) > 0 )
     {
       FDCAN_RxHeaderTypeDef Header;  // хидер для входящего сообщения
-      uint8_t RxData[4]; // максимальная длина сообщения - 64 байта 
+      uint8_t RxData[4]; // длина входящего сообщения - 4 байта, вообще максимальная длина сообщения - 64 байта 
       if (HAL_FDCAN_GetRxMessage(hfdcan1, FDCAN_RX_FIFO0, &Header, RxData) != HAL_OK){ Error_Handler(); }  
       else{ // напечатаем первые 4 байта входящего сообщения, если все ок. Пример отправки сообщения cansend can0 00000123#DEADBEEF 
       Serial.print("ID ");
