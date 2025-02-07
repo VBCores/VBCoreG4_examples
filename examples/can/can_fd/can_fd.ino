@@ -14,7 +14,7 @@
 //функция create_header(uint8_t ID) создает хидер для отправки сообщения, в нее нужно передать переменную типа uint8_t - ID сообщения
 
 
-uint8_t data[4] = { 190, 222, 173, 239}; //DE AD BE EF
+uint8_t data[4] = { 222, 173, 190, 239}; //DE AD BE EF
 unsigned long t;
 FDCAN_HandleTypeDef*  hfdcan1; // создаем переменную типа FDCAN_HandleTypeDef
 CanFD* canfd;
