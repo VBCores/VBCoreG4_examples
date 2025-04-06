@@ -18,10 +18,13 @@ HardwareTimer *timer_move = new HardwareTimer(TIM3);
 
 int count = 0;
 int rotations = 0;
+int prev_rotations = 0;
 float t = 0;
 float prev_count = 0;
 float vel = 0;
-int ipr = 1240;
+int ticks = 22;
+int ration = 56;
+int ipr = ticks*ration;
 HardwareTimer *timer_vel = new HardwareTimer(TIM5);
 
 void ISR_A(){
@@ -44,8 +47,9 @@ void ISR_A(){
 }
 
 void get_velocity(){
- vel = ((count - prev_count)*2*M_PI/ipr)/0.04;
- prev_count = count;
+ vel = ((count+rotations*ipr - prev_count)*2*M_PI/ipr)/0.02;
+ prev_count = count+rotations*ipr;
+ if(abs(vel)<12)Serial.println(vel);
 }
 
 
@@ -66,9 +70,8 @@ void setup() {
   analogWrite(IN1, 0);
   analogWrite(IN2, 0);
 
-  prev_btnSt = digitalRead(USR_BTN);
-
   Serial.begin(500000);
+  analogWriteFrequency(10000);
 
   timer_move->pause();
   timer_move->setOverflow(100, HERTZ_FORMAT); 
@@ -77,39 +80,35 @@ void setup() {
   timer_move->resume();
 
   timer_vel->pause();
-  timer_vel->setOverflow(25, HERTZ_FORMAT);
+  timer_vel->setOverflow(50, HERTZ_FORMAT);
   timer_vel->attachInterrupt(get_velocity);
   timer_vel->refresh();
   timer_vel->resume();
 
   delay(1000);
+  t = millis();
 }
 float v_sense;
 void loop() {
-  buttonState = digitalRead(USR_BTN);
-  if(buttonState == LOW && prev_btnSt == HIGH){
-    forward = !forward;
-    prev_btnSt = buttonState;
-    analogWrite(IN1, 255);
-    analogWrite(IN2, 255);
-    delay(1);
-  }
-  if(buttonState == HIGH) {prev_btnSt = buttonState;}
   if (Serial.available() > 0) {
     duty = Serial.readString().toInt();
   }
-  v_sense = 10*(analogRead(AIOUT)*3.3/4096);
-  // Serial.print(v_sense);
-  // Serial.print(" ");
-  Serial.println(vel);
+  // if(millis()-t  >= 20){
+  //     Serial.println(vel);
+  //     delay(10);
+  //     t = millis();
+  //   }
+  
 }
 
 void move(){
-  if (forward == HIGH) {
-      analogWrite(IN1, 255-duty);
+  if (duty >= 0){
+      analogWrite(IN1, 255);
+      analogWrite(IN2, 255 - duty);
     }
-  if (forward == LOW) {
-    analogWrite(IN2, 255-duty);
-  }
+    else{
+      analogWrite(IN2, 255);
+      analogWrite(IN1, 255 - abs(duty));
+    }
 }
 

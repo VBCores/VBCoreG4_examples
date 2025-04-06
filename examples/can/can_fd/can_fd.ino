@@ -22,14 +22,12 @@ FDCAN_TxHeaderTypeDef TxHeader; //FDCAN_TxHeaderTypeDef TxHeader;
 void setup() {
   Serial.begin(115200);
   pinMode(LED2, OUTPUT);
-  pinMode(PC5, OUTPUT);
-  digitalWrite(PC5, HIGH);
   /* Настройка FD CAN
   */
   SystemClock_Config();  // Настройка тактирования
   canfd = new CanFD();  // Создаем управляющий класс
   canfd->init(); // Инициализация CAN
-  canfd->write_default_params();  // Записываем дефолтные параметры для FDCAN (500000 nominal / 4000000 data)
+  canfd->write_default_params();  // Записываем дефолтные параметры для FDCAN (1000000 nominal / 8000000 data)
   canfd->apply_config();  // Применяем их
   hfdcan1 = canfd->get_hfdcan();  // Сохраняем конфиг
   canfd->default_start();
