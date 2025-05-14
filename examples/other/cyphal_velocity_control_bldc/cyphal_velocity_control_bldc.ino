@@ -11,6 +11,10 @@
 #include <uavcan/si/unit/angle/Scalar_1_0.h>
 #include <uavcan/primitive/array/Real16_1_0.h>
 
+#define DIP_1 PB2
+#define DIP_2 PB10
+#define DIP_3 PB11
+#define DIP_4 PB12
 
 SPIClass SPI_3(PC12, PC11, PC10);
 MagneticSensorSPI sensor = MagneticSensorSPI(PA15, 14, 0x3FFF);
@@ -135,8 +139,10 @@ void setup() {
   pinMode(PB14, OUTPUT);
   pinMode(PB13, OUTPUT);
 
-  pinMode(PB12, INPUT_PULLDOWN); //4 дип переключатель
-  pinMode(PA12, INPUT_PULLDOWN);  // 5 дип переключатель
+  pinMode(DIP_1, INPUT_PULLDOWN);
+  pinMode(DIP_2, INPUT_PULLDOWN);
+  pinMode(DIP_3, INPUT_PULLDOWN);
+  pinMode(DIP_4, INPUT_PULLDOWN);
 
   digitalWrite(PB15, HIGH);
   digitalWrite(PB14, HIGH);
@@ -205,8 +211,11 @@ void setup() {
 
 
 void set_config(){
-  if (digitalRead(PB12) == HIGH){NODE_ID = 4;}
-  if (digitalRead(PA12) == HIGH) {NODE_ID = 5;}
+  uint8_t mask = digitalRead(DIP_1);
+  mask = (mask<<1)^digitalRead(DIP_2);
+  mask = (mask<<1)^digitalRead(DIP_3);
+  mask = (mask<<1)^digitalRead(DIP_4);
+  NODE_ID = mask;
   Serial.print("NODE ID: ");
   Serial.println(NODE_ID);
   ANGULAR_VELOCITY_PORT = (NODE_ID * 100) + 2000; //2400
