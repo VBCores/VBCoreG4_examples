@@ -11,6 +11,11 @@
 #include <uavcan/si/unit/angle/Scalar_1_0.h>
 #include <uavcan/primitive/array/Real16_1_0.h>
 
+#include <Wire.h>
+#include <EEPROM.h>
+
+#define EEPROM_I2C_ADDR 0x50  
+
 #define DIP_1 PB2
 #define DIP_2 PB10
 #define DIP_3 PB11
@@ -133,6 +138,16 @@ void foc_timer(){
 void setup() {
   Serial.begin(115200);
 
+  Wire.setSDA(pinSDA); //PB_7_ALT1
+  Wire.setSCL(pinSCL); //PC6
+  Wire.begin();
+
+  EEPROM.put(0x01, 0xFF); // очистить eeprom
+  float zero_electric_angle = 0;
+  EEPROM.get(0x01, zero_electric_angle);
+  Serial.print("Прочитано значение: ");
+  Serial.println(zero_electric_angle);
+
   pinMode(PB5, INPUT);
   pinMode(PB3, OUTPUT);
   pinMode(PB15, OUTPUT);
@@ -181,11 +196,29 @@ void setup() {
   /* Инициализация FOC c калибровкой!!! 
   Закоментируйте  строки с current_sense.skip_align = ... до  motor.initFOC(); включительно
   Раскомментируйте  следующие 5 строк*/
-  motor.initFOC();  
-  Serial.print("Zero electric offset: ");
-  Serial.println(motor.zero_electric_angle);
-  Serial.print("Sensor direction: ");
-  Serial.println(motor.sensor_direction == Direction::CW ? "CW" : "CCW");
+  // if (zero_electric_angle){
+  //   motor.initFOC();  
+  //   Serial.print("Zero electric offset: ");
+  //   Serial.println(motor.zero_electric_angle);
+  //   Serial.print("Sensor direction: ");
+  //   Serial.println(motor.sensor_direction == Direction::CW ? "CW" : "CCW");
+  //   zero_electric_angle = motor.zero_electric_angle;
+  //   float sensor_direction;
+  //   if(motor.sensor_direction == Direction::CW){
+  //     sensor_direction = 1;
+  //   }
+  //   else{sensor_direction = -1;}
+  //   EEPROM.put(0x01, sensor_direction);
+  //   EEPROM.put(0x02, zero_electric_angle);
+
+  //   float d, a;
+  //   EEPROM.get(0x01, d);
+  //   EEPROM.get(0x02, a);
+  //   Serial.print(d);
+  //   Serial.print(" ");
+  //   Serial.println(a);
+  // }
+  
   
   // current_sense.skip_align  = true;
   // motor.zero_electric_angle = 5.91; //3.23 -- big  5.91 -- small
@@ -215,14 +248,13 @@ void set_config(){
   mask = (mask<<1)^digitalRead(DIP_2);
   mask = (mask<<1)^digitalRead(DIP_3);
   mask = (mask<<1)^digitalRead(DIP_4);
-  NODE_ID = mask;
+  NODE_ID = (int)mask;
   Serial.print("NODE ID: ");
   Serial.println(NODE_ID);
   ANGULAR_VELOCITY_PORT = (NODE_ID * 100) + 2000; //2400
   ANGLE_PORT = ANGULAR_VELOCITY_PORT + 5;//2405
   K_PORT = ANGULAR_VELOCITY_PORT + 10;//2410
   ANGULAR_VELOCITY_PORT_SUB = ANGULAR_VELOCITY_PORT + 50; //2450
-  Serial.println(ANGULAR_VELOCITY_PORT_SUB);
 
   //init can fd
   SystemClock_Config();  // Настройка тактирования

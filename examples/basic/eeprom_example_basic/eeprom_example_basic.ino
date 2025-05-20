@@ -19,7 +19,7 @@ void setup() {
   Wire.setSCL(pinSCL); //PC6
   Wire.begin();
 
-  //EEPROM.put(0x01, 0xFF); // очистить eeprom
+  EEPROM.put(0x01, 0xFF); // очистить eeprom
   byte val = EEPROM.read(0x01); // можно использовать от 0x0000 до 0x7FFF
   Serial.print("Прочитано значение: 0x");
   Serial.println(val, HEX);
