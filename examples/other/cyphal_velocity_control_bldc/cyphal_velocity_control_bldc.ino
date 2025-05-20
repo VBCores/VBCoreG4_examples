@@ -18,6 +18,8 @@
 #define DIP_2 PB10
 #define DIP_3 PB11
 #define DIP_4 PB12
+#define pinSDA PB_7_ALT1
+#define pinSCL PC6
 
 SPIClass SPI_3(PC12, PC11, PC10);
 MagneticSensorSPI sensor = MagneticSensorSPI(PA15, 14, 0x3FFF);
@@ -26,7 +28,7 @@ BLDCMotor motor = BLDCMotor(15);
 BLDCDriver3PWM driver = BLDCDriver3PWM(PA8, PA9, PA10);
 
 InlineCurrentSense current_sense = InlineCurrentSense(45.0, PC1, PC2, PC3); 
-
+HardwareTimer *timer = new HardwareTimer(TIM5);
 
 template <class T>
 class ReservedObject {
@@ -124,7 +126,7 @@ public:
 
 
 
-HardwareTimer *timer = new HardwareTimer(TIM5);
+
 ReservedObject<VelSub> vel_sub;
 ReservedObject<KSub> k_sub;
 float offset_angle;
@@ -136,7 +138,7 @@ void foc_timer(){
 void setup() {
   Serial.begin(115200);
   
-  initEEPROM();
+  initEEPROM(pinSDA, pinSCL);
   
 
   pinMode(USR_BTN, INPUT_PULLUP);
