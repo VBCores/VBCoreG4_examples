@@ -1,5 +1,6 @@
 #include <SimpleFOC.h>
 #include <VBCoreG4_arduino_system.h>
+#include <VB_EEPROM.h>
 
 #include <utility>
 #include <cyphal.h>
@@ -11,11 +12,8 @@
 #include <uavcan/si/unit/angle/Scalar_1_0.h>
 #include <uavcan/primitive/array/Real16_1_0.h>
 
-#include <Wire.h>
-#include <EEPROM.h>
-
-#define EEPROM_I2C_ADDR 0x50  
-
+#define EEPROM_ZERO_ANGLE_ADDR 0x10
+#define EEPROM_DIRECTION_ADDR 0x20
 #define DIP_1 PB2
 #define DIP_2 PB10
 #define DIP_3 PB11
@@ -137,17 +135,11 @@ void foc_timer(){
 
 void setup() {
   Serial.begin(115200);
+  
+  initEEPROM();
+  
 
-  Wire.setSDA(pinSDA); //PB_7_ALT1
-  Wire.setSCL(pinSCL); //PC6
-  Wire.begin();
-
-  EEPROM.put(0x01, 0xFF); // очистить eeprom
-  float zero_electric_angle = 0;
-  EEPROM.get(0x01, zero_electric_angle);
-  Serial.print("Прочитано значение: ");
-  Serial.println(zero_electric_angle);
-
+  pinMode(USR_BTN, INPUT_PULLUP);
   pinMode(PB5, INPUT);
   pinMode(PB3, OUTPUT);
   pinMode(PB15, OUTPUT);
@@ -165,7 +157,6 @@ void setup() {
   digitalWrite(PB3, HIGH);
 
   set_config();
-
  
   sensor.init(&SPI_3);
   motor.linkSensor(&sensor);
@@ -193,41 +184,25 @@ void setup() {
 
   motor.init();
   
-  /* Инициализация FOC c калибровкой!!! 
-  Закоментируйте  строки с current_sense.skip_align = ... до  motor.initFOC(); включительно
-  Раскомментируйте  следующие 5 строк*/
-  // if (zero_electric_angle){
-  //   motor.initFOC();  
-  //   Serial.print("Zero electric offset: ");
-  //   Serial.println(motor.zero_electric_angle);
-  //   Serial.print("Sensor direction: ");
-  //   Serial.println(motor.sensor_direction == Direction::CW ? "CW" : "CCW");
-  //   zero_electric_angle = motor.zero_electric_angle;
-  //   float sensor_direction;
-  //   if(motor.sensor_direction == Direction::CW){
-  //     sensor_direction = 1;
-  //   }
-  //   else{sensor_direction = -1;}
-  //   EEPROM.put(0x01, sensor_direction);
-  //   EEPROM.put(0x02, zero_electric_angle);
-
-  //   float d, a;
-  //   EEPROM.get(0x01, d);
-  //   EEPROM.get(0x02, a);
-  //   Serial.print(d);
-  //   Serial.print(" ");
-  //   Serial.println(a);
-  // }
+  if (!isDataInEEPROM(EEPROM_ZERO_ANGLE_ADDR) && !isDataInEEPROM(EEPROM_DIRECTION_ADDR)) {
+    Serial.println("EEPROM пуста. Запускаем initFOC");
+    motor.initFOC();
+    writeFloatToEEPROM(EEPROM_ZERO_ANGLE_ADDR, motor.zero_electric_angle);
+    delay(5);
+    if (motor.sensor_direction == Direction::CW){writeFloatToEEPROM(EEPROM_DIRECTION_ADDR, 1.0);}
+    else {writeFloatToEEPROM(EEPROM_DIRECTION_ADDR, -1.0);}
+    delay(5);
+  } 
   
+  else {
+    Serial.print("В EEPROM уже есть значеня.");
+    current_sense.skip_align  = true;
+    motor.zero_electric_angle = readFloatFromEEPROM(EEPROM_ZERO_ANGLE_ADDR);
+    if (readFloatFromEEPROM(EEPROM_DIRECTION_ADDR) == 1.0) {motor.sensor_direction = Direction::CW;}
+    else if (readFloatFromEEPROM(EEPROM_DIRECTION_ADDR) == -1.0) {motor.sensor_direction = Direction::CCW;}
+    else Serial.println("Check EEPROM");
+  }
   
-  // current_sense.skip_align  = true;
-  // motor.zero_electric_angle = 5.91; //3.23 -- big  5.91 -- small
-  // motor.sensor_direction = Direction::CW; 
-  // // !!! Инициализация FOC БЕЗ калибровки
-  // motor.initFOC();
-  
-  
-
   Serial.println(F("Motor ready."));
   Serial.println(F("Set the target velocity using cyphal:"));
   offset_angle = sensor.getAngle();
@@ -292,8 +267,10 @@ void loop() {
       send_data();
       t_vel = millis();
     }
- // motor.loopFOC();
   motor.move(target_velocity);
+  if (digitalRead(USR_BTN) == 0){
+    clearEEPROM();
+  };
   delay(1);
 }
 

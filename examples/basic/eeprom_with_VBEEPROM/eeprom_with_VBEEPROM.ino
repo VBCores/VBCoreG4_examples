@@ -7,9 +7,7 @@
 void setup() {
   Serial.begin(115200);
   initEEPROM();
-  Serial.println("inited");
   clearEEPROM();
-  Serial.println("cleared");
   float default_value = -5.8;
   if (!isDataInEEPROM(EEPROM_DATA_ADDR)) {
     Serial.println("EEPROM пуста. Записываю значение по умолчанию...");
