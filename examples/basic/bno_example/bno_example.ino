@@ -16,8 +16,9 @@ void setup() {
   Wire.setSDA(PB_7_ALT1);
   Wire.setSCL(PC6);
   Wire.begin();
-  bno2 = Adafruit_BNO055(56, 0x29, & Wire);
   //bno1 = Adafruit_BNO055(55, 0x28, & Wire);
+  bno2 = Adafruit_BNO055(56, 0x29, & Wire);
+  
 
   while (!Serial) delay(10);  // wait for serial port to open!
   if (!bno2.begin())
@@ -29,7 +30,7 @@ void setup() {
   
 }
 
-float orientation_x; //
+float orientation_x; 
 float orientation_y;
 float orientation_z;
 uint16_t BNO055_SAMPLERATE_DELAY_MS = 10; //how often to read data from the board
@@ -44,16 +45,5 @@ void loop() {
   Serial.print(event2.orientation.y, 2);
   Serial.print(" | Крен: ");
   Serial.println(event2.orientation.z, 2);
-  // pendulum_angle = orientationData.orientation.x;
-  // pendulum_vel =angVelData.gyro.z;
-}
-
-
-
-// function constraining the angle in between -pi and pi, in degrees -180 and 180
-float constrainAngle(float x){
-    //Serial.print(x-180);
-    x = x*_PI/180;
-    return x - _PI;
 }
 
