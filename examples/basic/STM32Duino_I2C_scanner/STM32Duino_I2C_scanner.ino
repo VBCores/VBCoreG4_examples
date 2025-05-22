@@ -44,8 +44,7 @@ void setup() {
   Wire.setSDA(PB_7_ALT1);
   Wire.setSCL(PC6);
   Wire.begin();
-  Wire.setClock(50000);
-
+ 
 
 }
 
