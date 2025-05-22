@@ -5,45 +5,52 @@
 
 
 
-//Adafruit_BNO055 bno1;  
-Adafruit_BNO055 bno2;  
+Adafruit_BNO055 bno28;  
+Adafruit_BNO055 bno29;  
 
-sensors_event_t event1, event2;
+sensors_event_t event28, event29;
 
 void setup() {
   Serial.begin(115200);
- 
+  pinMode(PB0, OUTPUT);
+
+  digitalWrite(PB0, LOW);
+  delay(1000);
+  digitalWrite(PB0, HIGH);
+  delay(1000);
+
   Wire.setSDA(PB_7_ALT1);
   Wire.setSCL(PC6);
   Wire.begin();
-  //bno1 = Adafruit_BNO055(55, 0x28, & Wire);
-  bno2 = Adafruit_BNO055(56, 0x29, & Wire);
+  bno28 = Adafruit_BNO055(55, 0x28, & Wire);
+  bno29 = Adafruit_BNO055(56, 0x29, & Wire);
   
 
   while (!Serial) delay(10);  // wait for serial port to open!
-  if (!bno2.begin())
+  if (!bno28.begin() )
   {
-    Serial.println("No BNO055 detected");
+    Serial.print("No 28 BNO055 detected");
     while (1);
   }
-  else{Serial.println("Smth detectes");}
-  
+  if (!bno29.begin() )
+  {
+    Serial.print("No 29 BNO055 detected");
+    while (1);
+  }
+    
 }
 
-float orientation_x; 
-float orientation_y;
-float orientation_z;
-uint16_t BNO055_SAMPLERATE_DELAY_MS = 10; //how often to read data from the board
-
 void loop() {
- // bno1.getEvent(&event1, Adafruit_BNO055::VECTOR_EULER);
-  bno2.getEvent(&event2, Adafruit_BNO055::VECTOR_EULER);
-  
-  Serial.print("Курс: ");
-  Serial.print(event2.orientation.x, 2);
-  Serial.print(" | Тангаж: ");
-  Serial.print(event2.orientation.y, 2);
-  Serial.print(" | Крен: ");
-  Serial.println(event2.orientation.z, 2);
+ bno28.getEvent(&event28, Adafruit_BNO055::VECTOR_LINEARACCEL);
+ bno29.getEvent(&event29, Adafruit_BNO055::VECTOR_LINEARACCEL);
+ // bno29.getEvent(&event29, Adafruit_BNO055::VECTOR_EULER);
+ // bno28.getEvent(&event28, Adafruit_BNO055::VECTOR_EULER);
+ 
+  Serial.print(event28.acceleration.y);
+  Serial.print(" , ");
+  Serial.println(event29.acceleration.y+20);
+
+  delay(100);
+
 }
 
