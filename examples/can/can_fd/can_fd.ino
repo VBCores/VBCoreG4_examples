@@ -3,7 +3,7 @@
 
 //в VBCoreG4_arduino_system.h пин PA5 определен как LED2 
 
-//запустить can c распберри - sudo ip link set can0 up txqueuelen 65535 type can bitrate 1000000 dbitrate 8000000 fd on
+//запустить can c распберри - sudo ip link set can0 up txqueuelen 65535 type can bitrate 500000 dbitrate 4000000 fd on
 //отправить сообщение c распберри - cansend can0 00000123#DEADBEEF, ID всегда содержит 8 цифр
 //прочитать все сообщения в can -  candump can0
 //прочитать сообщение can по его ID -  candump can0,ID:7ff
@@ -27,7 +27,7 @@ void setup() {
   SystemClock_Config();  // Настройка тактирования
   canfd = new CanFD();  // Создаем управляющий класс
   canfd->init(); // Инициализация CAN
-  canfd->write_default_params();  // Записываем дефолтные параметры для FDCAN (1000000 nominal / 8000000 data)
+  canfd->write_default_params();  // Записываем дефолтные параметры для FDCAN (500000 nominal / 4000000 data)
   canfd->apply_config();  // Применяем их
   hfdcan1 = canfd->get_hfdcan();  // Сохраняем конфиг
   canfd->default_start();
