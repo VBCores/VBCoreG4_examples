@@ -36,7 +36,6 @@ void setup() {
   digitalWrite(PB13, HIGH);
   
   digitalWrite(PB3, HIGH);
-
   // initialise magnetic sensor hardware
   sensor.init(&SPI_3);
   // link the motor to the sensor
@@ -68,7 +67,7 @@ void setup() {
   _delay(1000);
   // read the sensor angle
   sensor.update();
-  float angle_begin = sensor.getAngle();
+  float angle_begin = -sensor.getAngle();
   _delay(50);
 
   // move the motor slowly to the electrical angle pp_search_angle
@@ -82,7 +81,7 @@ void setup() {
   _delay(1000);
   // read the sensor value for 180
   sensor.update(); 
-  float angle_end = sensor.getAngle();
+  float angle_end = -sensor.getAngle();
   _delay(50);
   // turn off the motor
   motor.move(0);

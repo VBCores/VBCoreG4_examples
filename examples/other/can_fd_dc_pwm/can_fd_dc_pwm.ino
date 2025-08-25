@@ -1,9 +1,13 @@
 #include <VBCoreG4_arduino_system.h>
 
+#define IN1 PA8
+#define IN2 PA9
+#define SLEEPn PB3
+#define VREF PA4
 
 //в VBCoreG4_arduino_system.h пин PA5 определен как LED2 
 
-//запустить can c распберри - sudo ip link set can0 up txqueuelen 65535 type can bitrate 1000000 dbitrate 8000000 fd on
+//запустить can c распберри - sudo ip link set can0 up txqueuelen 65535 type can bitrate 500000 dbitrate 4000000 fd on
 //отправить сообщение c распберри - cansend can0 00000123#DEADBEEF, ID всегда содержит 8 цифр
 //прочитать все сообщения в can -  candump can0
 //прочитать сообщение can по его ID -  candump can0,ID:7ff
@@ -12,14 +16,32 @@
 //функция init() запускает can
 //функция get_hfdcan() возвращает переменную типа FDCAN_HandleTypeDef, без которой невозможно взаимодействие с can
 
-
+/*Пример вращения dc мотором
+Напряжение, подаваемое мотором регулируется ШИМ сигналом
+ШИМ задается от 0 до 255 по кану первым байтом
+*/
 
 uint8_t data[4] = { 222, 173, 190, 239}; //DE AD BE EF
 unsigned long t;
 FDCAN_HandleTypeDef*  hfdcan1; // создаем переменную типа FDCAN_HandleTypeDef
 CanFD* canfd;
 FDCAN_TxHeaderTypeDef TxHeader; //FDCAN_TxHeaderTypeDef TxHeader;
+
+int pwm = 0;
+HardwareTimer *timer = new HardwareTimer(TIM3);
+
 void setup() {
+
+  pinMode(PB3, OUTPUT);
+  pinMode(IN1, OUTPUT);
+  pinMode(IN2, OUTPUT);
+  pinMode(VREF, OUTPUT);
+ 
+  digitalWrite(SLEEPn, HIGH);
+  digitalWrite(VREF, HIGH);
+  analogWrite(IN1, 0);
+  analogWrite(IN2, 0);
+
   Serial.begin(115200);
   pinMode(LED2, OUTPUT);
   /* Настройка FD CAN
@@ -37,8 +59,24 @@ void setup() {
   TxHeader.DataLength = FDCAN_DLC_BYTES_4;
   TxHeader.IdType = FDCAN_EXTENDED_ID;
 
+  timer->pause();
+  timer->setOverflow(1000, HERTZ_FORMAT); 
+  timer->attachInterrupt(move);
+  timer->refresh();
+  timer->resume();
+
 }
 
+void move(){
+  if (pwm>=0) {
+      analogWrite(IN1, 255);
+      analogWrite(IN2, 255-pwm);
+    }
+  else {
+    analogWrite(IN2, 255);
+    analogWrite(IN1, 255-abs(pwm)); 
+  }
+}
 
 void loop() {
   //------Отправка сообщения в can------
@@ -58,7 +96,7 @@ void loop() {
       else{ // напечатаем первые 4 байта входящего сообщения, если все ок. Пример отправки сообщения cansend can0 00000123#DEADBEEF 
       Serial.print("ID ");
       Serial.print(Header.Identifier); // ID сообщения 
-      Serial.print(" data: ");
+      Serial.print(" data, the first byte is target pwm: ");
       Serial.print(RxData[0]);
       Serial.print("  ");
       Serial.print(RxData[1]);
@@ -67,6 +105,7 @@ void loop() {
       Serial.print("  ");
       Serial.print(RxData[3]);
       Serial.println("  ");
+      pwm = RxData[0];
     }
     }
   delay(100); 
