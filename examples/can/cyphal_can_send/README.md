@@ -1,5 +1,5 @@
-Скачайте библиотеку libcypcal: https://github.com/VBCores/libcxxcanard
-
+Скачайте библиотеку [libcypcal](https://github.com/VBCores/libcxxcanard
+) и скопируйте в свою папку Arduino/Libraries:: 
 Документация с примерами к этой библиотеке есть в libcyphal-docs: https://github.com/VBCores/libcyphal-docs/tree/master 
 
 Если при компиляции кода в arduino возникнет ошибка на строки подключения canard.h, o1heap.h и т.п., то скопируйте все папки(их 5 штук) из libcxxcanard/libs/  в libcxxcanard/src
