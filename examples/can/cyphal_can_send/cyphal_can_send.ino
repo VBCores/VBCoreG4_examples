@@ -25,8 +25,8 @@ static std::shared_ptr<CyphalInterface> cyphal_interface;
 
 typedef uint32_t millis_t;
 typedef uint64_t micros_t;
-void heartbeat();
-void comms_loop(millis_t);
+void heartbeat();// объявляем функцию, которая будет отправлять heartbeat, реализуем ее ниже
+void comms_loop(millis_t); // объявляем функцию, которая принимает время в милисекундах и по времени выполняет команды, реализуем ее ниже
 
 void error_handler() {Serial.println("error"); while (1) {};}
 UtilityConfig utilities(micros, error_handler);
@@ -34,15 +34,13 @@ UtilityConfig utilities(micros, error_handler);
 constexpr micros_t MICROS_S = 1'000'000;
 
 
-static constexpr CanardPortID ANGLE_PORT = 6000;
-static constexpr CanardPortID ANGULAR_VELOCITY_PORT = 7000;
+static constexpr CanardPortID ANGLE_PORT = 6000; // ID порта, куда будем отправлять угол
+static constexpr CanardPortID ANGULAR_VELOCITY_PORT = 7000;// ID порта, куда будем отправлять скорость
 
 
 void setup() {
   Serial.begin(115200);
   pinMode(LED2, OUTPUT);
-  pinMode(PC5, OUTPUT);
-  digitalWrite(PC5, HIGH);
   /* Настройка FD CAN
   */
   SystemClock_Config();  // Настройка тактирования
@@ -63,8 +61,9 @@ void setup() {
 }
 
 void loop() {
-    uint32_t t = micros();
-    millis_t current_millis = (millis_t)(t / 1000);
+    uint32_t t = micros(); // берем текущее время в микросекундах
+    millis_t current_millis = (millis_t)(t / 1000); // переводим время в милисекунды
+    // вызываем функцию под названием comms_loop, которая реализована ниже, в качестве аргумента передаем милисекунды
     comms_loop(current_millis);
 }
 
@@ -73,8 +72,8 @@ void loop() {
         code_blk                              \
         _counter = _value;                    \
     }
-
-void heartbeat() {
+// функция, которая отправляет heardbeat
+void heartbeat() { 
     static uint32_t uptime = 0;
     static CanardTransferID hbeat_transfer_id = 0;
     HBeat::Type heartbeat_msg = {
@@ -93,13 +92,14 @@ void heartbeat() {
         );
     }
 }
+// функция, которая отправляет угол
 void send_angle() {
     Angle::Type msg = {};
     static CanardTransferID angle_transfer_id = 0;
     msg.radian = 3.14;
     cyphal_interface->send_msg<Angle>(&msg, ANGLE_PORT, &angle_transfer_id);
 }
-
+//функция, которая отправляет скорость
 void send_angular_velocity() {
     AngularVelocity::Type msg = {};
     static CanardTransferID av_transfer_id = 0;
@@ -109,6 +109,9 @@ void send_angular_velocity() {
 
 static millis_t odom_report_time = 0;
 static millis_t hbeat_time = 0;
+
+// функция, принимает время в милисекундах и смотрит, если прошло 2 милисекунды, вызывает функции отправки угла и скорости по цефалу
+//если прошло 1000 милисекунд (1 секунда) - вызывается функция heartbeat
 void comms_loop(millis_t cur_millis) {
     cyphal_interface->loop();
     EACH_N(cur_millis, odom_report_time, 2, {
