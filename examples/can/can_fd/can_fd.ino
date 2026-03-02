@@ -4,7 +4,7 @@
 //в VBCoreG4_arduino_system.h пин PA5 определен как LED2 
 
 //запустить can c распберри - sudo ip link set can0 up txqueuelen 65535 type can bitrate 1000000 dbitrate 8000000 fd on
-//отправить сообщение c распберри - cansend can0 00000123#DEADBEEF, ID всегда содержит 8 цифр
+//отправить сообщение c распберри - cansend can0 00000123#DEADBEEF, мы по умолчанию используем расширенный 29-битный ID - 8 hex символов
 //прочитать все сообщения в can -  candump can0
 //прочитать сообщение can по его ID -  candump can0,ID:7ff, например, чтобы почитать сообщения с ID = 0x12: candump can0,0x12:7ff
 
@@ -33,9 +33,9 @@ void setup() {
   canfd->default_start(); // Стартуем can
  
   /*Заполняем хидер сообщения - указываем его ID (его можно менять), длину сообщения, тип ID - по умолчанию лучше использовать расширенный */
-  TxHeader.Identifier = 0x12; // ID сообщения
+  TxHeader.Identifier = 0x12; // ID сообщения - в расширенном формате ID = 00000012
   TxHeader.DataLength = FDCAN_DLC_BYTES_4; // Длина сообщение 4 байта
-  TxHeader.IdType = FDCAN_EXTENDED_ID; // Всегда по умолчанию используем расширенный тип ID
+  TxHeader.IdType = FDCAN_EXTENDED_ID; // Всегда по умолчанию используем расширенный 29-битный ID
 
 }
 
