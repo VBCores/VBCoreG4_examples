@@ -12,7 +12,7 @@
 
 int pwm = 0;
 int magnet = 22;
-int count = 0;
+volatile long count = 0;
 int prev_count = 0;
 int rotations = 0;
 int rotations_enc = 0;
@@ -28,14 +28,14 @@ void ISR_A(){
     count -= 1;
   }
 
-  if (count < -ipr){ // 1240 импульсов на оборот
-    rotations -= 1;
-    count = 0;
-  }
-  else if (count > ipr){
-    rotations += 1;
-    count = 0;
-  }
+  // if (count < -ipr){ // 1240 импульсов на оборот
+  //   rotations -= 1;
+  //   count = 0;
+  // }
+  // else if (count > ipr){
+  //   rotations += 1;
+  //   count = 0;
+  
 
 }
 
@@ -44,6 +44,7 @@ void ISR_A(){
 void setup() {
   pinMode(LED1, OUTPUT);  //PD2
   pinMode(LED2, OUTPUT);  //PA5
+  pinMode(Enc_A, INPUT);
   pinMode(Enc_B, INPUT);
   attachInterrupt(digitalPinToInterrupt(Enc_A), ISR_A, CHANGE);
   
@@ -55,7 +56,7 @@ void setup() {
  
   analogWriteFrequency(25000);
   digitalWrite(SLEEPn, HIGH);
-  analogWrite(VrefPin, 2500); // см в документации как считать Vref
+  digitalWrite(VrefPin, 2500);
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, LOW);
 
@@ -78,10 +79,12 @@ void loop() {
   if (Serial.available() > 0) {
     pwm = Serial.readString().toInt();    
   }
- 
-  Serial.print(count);
-  Serial.print(" ");
-  Serial.println(rotations);
+  // Serial.print(digitalRead(Enc_A));
+  // Serial.print(" ");
+  // Serial.print(digitalRead(Enc_B));
+  // Serial.print(" ");
+  
+  Serial.println(count);
 
 
 }
