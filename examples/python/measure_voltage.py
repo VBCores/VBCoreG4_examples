@@ -18,7 +18,7 @@ i2c = busio.I2C(board.SCL, board.SDA)
 # ADS1115
 ads = ADS.ADS1115(i2c, address=0x48)
 
-# канал AIN0 → это просто 0
+# возьмем выход AIN0
 chan = AnalogIn(ads, 0)
 while True:
     print(f"Voltage: {chan.voltage:.3f} V")
