@@ -55,6 +55,7 @@ void setup() {
  
   analogWriteFrequency(25000);
   digitalWrite(SLEEPn, HIGH);
+  analogWriteResolution(12);
   analogWrite(VrefPin, 2500); // см в документации как считать Vref
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, LOW);
@@ -67,12 +68,12 @@ void loop() {
 
   
   if (pwm>=0) {
-      analogWrite(IN1, 255);
-      analogWrite(IN2, 255-pwm);
+      analogWrite(IN1, 4095);
+      analogWrite(IN2, 4095-pwm);
     }
   else {
-    analogWrite(IN2, 255);
-    analogWrite(IN1, 255-abs(pwm)); 
+    analogWrite(IN2, 4095);
+    analogWrite(IN1, 4095-abs(pwm)); 
   }
   
   if (Serial.available() > 0) {
