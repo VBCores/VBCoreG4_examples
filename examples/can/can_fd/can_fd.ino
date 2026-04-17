@@ -14,7 +14,7 @@
 
 
 
-uint8_t data[4] = { 222, 173, 190, 239}; //DE AD BE EF - сообщение, которое будем отправлять
+uint8_t data[4] = { 190, 239, 222, 173 }; //DE AD BE EF - сообщение, которое будем отправлять
 unsigned long t;
 FDCAN_HandleTypeDef*  hfdcan1; // создаем переменную типа FDCAN_HandleTypeDef
 CanFD* canfd; // Класс CanFD - это управляющая  структура
