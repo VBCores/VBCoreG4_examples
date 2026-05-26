@@ -14,9 +14,11 @@ BLDCMotor motor = BLDCMotor(1);
 BLDCDriver3PWM driver = BLDCDriver3PWM(PA8, PA9, PA10);
 
 // magnetic sensor instance - SPI
-
-SPIClass SPI_3(PC12, PC11, PC10);
-MagneticSensorSPI sensor = MagneticSensorSPI(PA15, 14, 0x3FFF);
+//MOSI MISO SCLK
+// SPI1 PA7, PA6, PA5. chip select PA4
+//SPI3 PC12, PC11, PC10, chip select PA_15_ALT1 
+SPIClass SPI_3(PA7, PA6, PA5);
+MagneticSensorSPI sensor = MagneticSensorSPI(PA4, 14, 0x3FFF);
 // magnetic sensor instance - I2C
 //MagneticSensorI2C sensor = MagneticSensorI2C(0x36, 12, 0X0C, 4);
 // magnetic sensor instance - analog output
