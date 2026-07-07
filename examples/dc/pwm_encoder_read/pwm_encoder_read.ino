@@ -1,3 +1,7 @@
+/*TT Motor
+GM37-3530-1240-90
+DC/12V 44RPM 220909
+количество магнитов - 22*/
 #include <VBCoreG4_arduino_system.h>
 
 #define Enc_A PB6  
@@ -16,8 +20,8 @@ int count = 0;
 int prev_count = 0;
 int rotations = 0;
 int rotations_enc = 0;
-int gear_ratio = 56;
-int ipr = magnet* gear_ratio; //1240;
+int gear_ratio = 90;
+int ipr = magnet* gear_ratio;
 
 void ISR_A(){
 
@@ -28,7 +32,7 @@ void ISR_A(){
     count -= 1;
   }
 
-  if (count < -ipr){ // 1240 импульсов на оборот
+  if (count < -ipr){ 
     rotations -= 1;
     count = 0;
   }
@@ -39,11 +43,8 @@ void ISR_A(){
 
 }
 
-
-
 void setup() {
-  pinMode(LED1, OUTPUT);  //PD2
-  pinMode(LED2, OUTPUT);  //PA5
+  pinMode(Enc_A, INPUT);
   pinMode(Enc_B, INPUT);
   attachInterrupt(digitalPinToInterrupt(Enc_A), ISR_A, CHANGE);
   
@@ -56,7 +57,7 @@ void setup() {
   analogWriteFrequency(25000);
   digitalWrite(SLEEPn, HIGH);
   analogWriteResolution(12);
-  analogWrite(VrefPin, 2500); // см в документации как считать Vref
+  analogWrite(VrefPin, 2500); // см в документации как считать Vref https://docs.vbcores.ru/docs/Examples/arduino-examples
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, LOW);
 
@@ -83,6 +84,5 @@ void loop() {
   Serial.print(count);
   Serial.print(" ");
   Serial.println(rotations);
-
 
 }

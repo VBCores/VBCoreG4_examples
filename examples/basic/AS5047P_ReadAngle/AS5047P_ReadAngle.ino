@@ -35,7 +35,7 @@ void setup() {
 // arduino loop routine
 void loop() {
 
-  Serial.print("Angle: ");                        // print some text to the serial consol.
+  // Serial.print("Angle: ");                        // print some text to the serial consol.
   Serial.println(as5047p.readAngleDegree());      // read the angle value from the AS5047P sensor an print it to the serial consol.
 
   digitalWrite(LED2, !digitalRead(LED2));         // blink led            

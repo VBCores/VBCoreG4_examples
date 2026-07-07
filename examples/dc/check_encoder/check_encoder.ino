@@ -1,3 +1,7 @@
+/*TT Motor
+GM37-3530-1240-90
+DC/12V 44RPM 220909
+количество магнитов - 22*/
 #include <VBCoreG4_arduino_system.h>
 
 #define Enc_A PB6  
@@ -14,10 +18,8 @@ int pwm = 0;
 int magnet = 22;
 volatile long count = 0;
 int prev_count = 0;
-int rotations = 0;
-int rotations_enc = 0;
-int gear_ratio = 56;
-int ipr = magnet* gear_ratio; //1240;
+int gear_ratio = 90;
+int ipr = magnet * gear_ratio; 
 
 void ISR_A(){
 
@@ -28,22 +30,11 @@ void ISR_A(){
     count -= 1;
   }
 
-  // if (count < -ipr){ // 1240 импульсов на оборот
-  //   rotations -= 1;
-  //   count = 0;
-  // }
-  // else if (count > ipr){
-  //   rotations += 1;
-  //   count = 0;
-  
-
 }
 
 
 
 void setup() {
-  pinMode(LED1, OUTPUT);  //PD2
-  pinMode(LED2, OUTPUT);  //PA5
   pinMode(Enc_A, INPUT);
   pinMode(Enc_B, INPUT);
   attachInterrupt(digitalPinToInterrupt(Enc_A), ISR_A, CHANGE);
@@ -66,7 +57,7 @@ void setup() {
 
 void loop() {
 
-  
+  if (abs(count) >= 44*ipr){pwm = 0;}
   if (pwm>=0) {
       analogWrite(IN1, 255);
       analogWrite(IN2, 255-pwm);
@@ -79,12 +70,7 @@ void loop() {
   if (Serial.available() > 0) {
     pwm = Serial.readString().toInt();    
   }
-  // Serial.print(digitalRead(Enc_A));
-  // Serial.print(" ");
-  // Serial.print(digitalRead(Enc_B));
-  // Serial.print(" ");
   
   Serial.println(count);
-
 
 }
