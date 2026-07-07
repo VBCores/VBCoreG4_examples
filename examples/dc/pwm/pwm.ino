@@ -1,3 +1,7 @@
+/*TT Motor
+GM37-3530-1240-90
+DC/12V 44RPM 220909
+количество магнитов - 22*/
 #include <VBCoreG4_arduino_system.h>
 
 #define IN1 PA8
@@ -19,7 +23,7 @@ void setup() {
   pinMode(VREF, OUTPUT);
  
   digitalWrite(SLEEPn, HIGH);
-  digitalWrite(VREF, HIGH); //in this case reference voltage = 3.3V
+  digitalWrite(VREF, HIGH); // in this case reference voltage = 3.3V см в документации как считать Vref https://docs.vbcores.ru/docs/Examples/arduino-examples
 
   analogWrite(IN1, 0);
   analogWrite(IN2, 0);

@@ -1,3 +1,7 @@
+/*TT Motor
+GM37-3530-1240-90
+DC/12V 44RPM 220909
+количество магнитов - 22*/
 #include <VBCoreG4_arduino_system.h>
 
 #define IN1 PA8
@@ -22,9 +26,9 @@ int prev_rotations = 0;
 float t = 0;
 float prev_count = 0;
 float vel = 0;
-int ticks = 22;
-int ration = 56;
-int ipr = ticks*ration;
+int magnet = 22;
+int gear_ratio = 90;
+int ipr = magnet* gear_ratio;
 HardwareTimer *timer_vel = new HardwareTimer(TIM5);
 
 void ISR_A(){
@@ -36,7 +40,7 @@ void ISR_A(){
     count += 1;
   }
 
-  if (count < -ipr){ // 1240 импульсов на оборот
+  if (count < -ipr){ 
     rotations += 1;
     count = 0;
   }
@@ -93,12 +97,7 @@ void loop() {
   if (Serial.available() > 0) {
     duty = Serial.readString().toInt();
   }
-  // if(millis()-t  >= 20){
-  //     Serial.println(vel);
-  //     delay(10);
-  //     t = millis();
-  //   }
-  
+    
 }
 
 void move(){

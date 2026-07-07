@@ -47,7 +47,7 @@ void setup() {
  
   analogWriteFrequency(25000);
   digitalWrite(SLEEPn, HIGH);
-  digitalWrite(VrefPin, 2500);
+  digitalWrite(VrefPin, 2500); // см в документации как считать Vref https://docs.vbcores.ru/docs/Examples/arduino-examples
   digitalWrite(IN1, LOW);
   digitalWrite(IN2, LOW);
 
@@ -57,7 +57,7 @@ void setup() {
 
 void loop() {
 
-  if (abs(count) >= 44*ipr){pwm = 0;}
+  if (abs(count) >= ipr){pwm = 0;}
   if (pwm>=0) {
       analogWrite(IN1, 255);
       analogWrite(IN2, 255-pwm);
