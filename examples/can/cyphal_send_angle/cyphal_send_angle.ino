@@ -10,22 +10,16 @@ std::shared_ptr<ArduinoCyphal<>> cyphal;
 
 static CanardTransferID angle_transfer_id = 0;
 
-void send_angle(float radian)
-{
+void send_angle(float radian){
     AngleSampleScalar msg{};
 
     msg.timestamp.microsecond = micros();
     msg.radian = radian;
 
-    cyphal->send_msg(
-        &msg,
-        ANGLE_TX_PORT_ID,
-        &angle_transfer_id
-    );
+    cyphal->send_msg(&msg, ANGLE_TX_PORT_ID, &angle_transfer_id);
 }
 
-void setup()
-{
+void setup(){
     Serial.begin(115200);
 
     SystemClock_Config();
@@ -41,8 +35,7 @@ void setup()
     cyphal->begin();
 }
 
-void loop()
-{
+void loop(){
     cyphal->cyphal_loop();
     static uint32_t last_send = 0;
 
